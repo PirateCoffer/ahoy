@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:IronFramework/crypto.git
+	branch = master
+	commit = 858cab07035bbb418e14df7cb5f55a3c45d89879
+	parent = 1f45c9424cf022734cadfc7857ccc44e2afee3a6
+	method = merge
+	cmdver = 0.4.2

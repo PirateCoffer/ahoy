@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:IronFramework/nuxt.git
+	branch = master
+	commit = a9317ac68c49db563138f9c1763be0bb8bdd1e78
+	parent = 9c16cb1619a083fd193b104d1031b336574ff4a0
+	method = merge
+	cmdver = 0.4.2

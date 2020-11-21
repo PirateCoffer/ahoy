@@ -1,0 +1,33 @@
+{
+  "name": "ahoy",
+  "version": "1.0.0",
+  "description": "Chat for Pirates & Scallywags",
+  "config": {
+    "title": "Ahoy",
+    "subtitle": "Chat Like Pirates",
+    "url": "https://piratecoffer.github.io/ahoy"
+  },
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup"
+  },
+  "dependencies": {
+    "@nuxt/content": "^1.5.0",
+    "@nuxtjs/axios": "^5.12.0",
+    "iron-common": "file:src/modules/common",
+    "iron-crypto": "file:src/modules/crypto",
+    "iron-nuxt": "file:src/modules/nuxt",
+    "nuxt": "^2.14.7",
+    "vue-clipboard2": "^0.3.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/vuetify": "^1.11.2",
+    "push-dir": "^0.4.1",
+    "stylus": "^0.54.8",
+    "stylus-loader": "^4.3.0"
+  },
+  "private": true
+}

@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:IronFramework/common.git
+	branch = master
+	commit = 39ce3aa1e8993c977a41d9e627cf75bb02f70790
+	parent = 33ef86d7ac18e7f209bb2f83b1559191690b6b51
+	method = merge
+	cmdver = 0.4.2
