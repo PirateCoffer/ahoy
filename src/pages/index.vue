@@ -5,7 +5,6 @@
 <script>
 export default {
   name: 'DiscoClone',
-  layout: 'chat.tpl',
   data: () => ({
   }),
   methods: {
