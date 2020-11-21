@@ -85,7 +85,9 @@
       <template v-slot:prepend>
         <v-list-item>
           <v-list-item-avatar :color="account.color">
-            {{account.avatar}}
+            <v-avatar :color="account.color">
+              {{account.avatar}}
+            </v-avatar>
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>{{account.name}}</v-list-item-title>
