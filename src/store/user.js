@@ -1,4 +1,4 @@
-import Crypto from 'iron-core/crypto'
+import Crypto from 'iron-crypto'
 
 export const state = () => ({
   auth: null,

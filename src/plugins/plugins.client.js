@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueClipboard from 'vue-clipboard2'
 import utilMixins from '~/mixins/utilMixins'
 
-require('iron-core').explode()
+require('iron-common').explode()
 
 Vue.use(function (Vue, options) {
   Vue.mixin({ mixins: [ utilMixins ] })
