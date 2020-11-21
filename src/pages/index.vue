@@ -1,10 +1,10 @@
 <template>
-  <div>Sup</div>
+  <div></div>
 </template>
 
 <script>
 export default {
-  name: 'DiscoClone',
+  name: 'HomePage',
   data: () => ({
   }),
   methods: {

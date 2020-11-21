@@ -25,7 +25,7 @@
       </v-responsive>
       <v-btn large icon class="mx-1" @click="rightNav = !rightNav">
         <v-avatar size="36" :color="account.color">
-          {{account.avatar}}
+          <span>{{account.avatar}}</span>
           <!-- <img :src="repopath + '/media/images/avatar.png'" alt="Davy Jones"> -->
         </v-avatar>
       </v-btn>
@@ -67,7 +67,9 @@
               <span class="grey--text">&nbsp;active</span>
             </v-list-item-subtitle>
           </v-list-item-content>
-          <v-list-item-avatar size="26" color="green" class="body-2">{{channels[key].unread}}</v-list-item-avatar>
+          <v-list-item-avatar size="26" color="green" class="body-2">
+            <span>{{channels[key].unread}}</span>
+          </v-list-item-avatar>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
