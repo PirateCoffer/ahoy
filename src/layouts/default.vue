@@ -1,17 +1,21 @@
-<template>
+<template> 
   <v-app>
+    <!-- App Bar -->
     <v-app-bar
       app
       clipped-right
       flat
       height="68"
       >
-      <v-app-bar-nav-icon @click.stop="leftNav = !leftNav" class="hidden-md-and-up" />
-      <v-toolbar-title class="pl-0 d-flex align-center">
+      <v-app-bar-nav-icon @click.stop="leftNav = !leftNav" class="hidden-md-and-up" v-if="$auth"/>
+      <v-toolbar-title class="pl-0 d-flex align-center" v-if="$auth">
         {{user.name}}&nbsp;<v-icon small color="yellow darken-3">mdi-star</v-icon>
       </v-toolbar-title>
+      <v-toolbar-items class="ml-3" v-else>
+        <v-btn text to="/">Ahoy!</v-btn>
+      </v-toolbar-items>
       <v-spacer></v-spacer>
-      <v-responsive max-width="178">
+      <v-responsive max-width="178" v-if="$auth">
         <v-text-field
           dense
           flat
@@ -23,16 +27,22 @@
           @click:prepend-inner=""
         ></v-text-field>
       </v-responsive>
-      <v-btn large icon class="mx-1" @click="rightNav = !rightNav">
+      <v-btn large icon class="mx-1" @click="rightNav = true" v-if="$auth">
         <v-avatar size="36" :color="account.color">
           {{account.avatar}}
         </v-avatar>
       </v-btn>
+      <v-toolbar-items class="ml-3" v-else>
+        <v-btn text to="/user/sign-up">Register</v-btn>
+        <v-btn text to="/user/sign-in">Login</v-btn>
+      </v-toolbar-items>
     </v-app-bar>
+    <!-- Left Nav -->
     <v-navigation-drawer
       app
       mobile-breakpoint="960"
       v-model="leftNav"
+      v-if="$auth"
       >
       <template v-slot:prepend>
         <v-list-item>
@@ -76,6 +86,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+    <!-- Right Nav -->
     <v-navigation-drawer
       app
       right
@@ -102,7 +113,7 @@
           </v-list-item-icon>
           <v-list-item-title>Settings</v-list-item-title>
         </v-list-item>
-        <v-list-item link>
+        <v-list-item @click="onLogout">
           <v-list-item-icon>
             <v-icon>mdi-logout-variant</v-icon>
           </v-list-item-icon>
@@ -111,82 +122,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <div class="fill-height d-flex flex-column">
-        <div class="flex-grow-1" style="position: relative;">
-          <div
-            style="position: absolute; top: 0; right: 0; bottom: 0; left: 0;"
-            class="d-flex flex-column justify-end"
-            >
-            <div ref="scroller" style="overflow: auto;">
-              <div
-                v-for="item in messages"
-                :key="item.id"
-                class="d-flex align-start"
-                >
-                <v-avatar
-                  v-if="!item.multi"
-                  :color="item.color"
-                  class="ma-2 ml-3"
-                  size="40"
-                  >
-                  {{item.avatar}}
-                </v-avatar>
-                <v-avatar v-else class="ma-2 ml-3" height="0" size="40"></v-avatar>
-                <div :class="`flex-grow-1 d-flex flex-column pa-2 pb-1 ${!item.multi ? 'pt-3' : 'pt-0'}`">
-                  <div v-if="!item.multi" class="body-1">
-                    <span class="body-1 grey--text text--lighten-3">{{item.name}}</span>
-                    <span class="caption grey--text text--lighten-1">&nbsp;</span>
-                    <span class="caption grey--text text--darken-1">{{item.time | datetime}}</span>
-                  </div>
-                  <div class="body-2 text-justify grey--text" v-html="item.message"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pa-2 pb-4 grey darken-3">
-          <v-text-field
-            v-if="false"
-            autofocus
-            hide-details
-            single-line
-            label="Message"
-            solo
-            v-model="message"
-            @keyup.enter.exact="onSend"
-            append-icon="mdi-send"
-            @click:append="onSend"
-          ></v-text-field>
-          <v-textarea
-            v-if="true"
-            rows="1"
-            auto-grow
-            autofocus
-            hide-details
-            single-line
-            label="Message"
-            solo
-            v-model="message"
-            ref="textform"
-            class="chat-field"
-            append-icon="mdi-send"
-            @click:append="onSend"
-            @keyup.stop.enter="updateScroll"
-            @keyup.stop.enter.exact="onSend"
-            >
-            <template v-slot:prepend-inner>
-              <v-file-input
-                v-model="files"
-                hide-input
-                hide-details
-                multiple
-                accept="image/*"
-                >
-              </v-file-input>
-            </template>
-          </v-textarea>
-        </div>
-      </div>
+      <nuxt />
     </v-main>
     <v-dialog
       v-model="dialog.addContact"
@@ -247,10 +183,13 @@
 </template>
 
 <script>
+import userMixin from '~/mixins/userMixins'
+
 export default {
   name: 'ChatLayout',
   components: {
   },
+  mixins: [userMixin],
   data: () => ({
     form: {
       settings: {
@@ -295,7 +234,7 @@ export default {
     message: '',
     number: 30,
     leftNav: null,
-    rightNav: false,
+    // rightNav: false,
     users: {
       alice: { username: 'alice', name: 'Alice', avatar: 'A', color: 'pink' },
       bob: { username: 'bob', name: 'Bob', avatar: 'B', color: 'teal' },
@@ -321,6 +260,14 @@ export default {
         this.channels[this.channel].recent = val
       },
     },
+    rightNav: {
+      get () {
+        return this.$store.state.rightNav
+      },
+      set (value) {
+        this.$store.commit('SET_RIGHT_NAV', value)
+      }
+    },
   },
   created () {
     this.channel = 'alice'
@@ -334,10 +281,10 @@ export default {
     this.$vuetify.theme.dark = true
   },
   mounted () {
-    this.updateScroll()
-    this.addEvent(window, 'resize', this.updateScroll.bind(this))
-  },
-  beforeDestroy () {
+    // if (this.$auth) {
+    //   this.updateScroll()
+    //   this.addEvent(window, 'resize', this.updateScroll.bind(this))
+    // }
   },
   methods: {
     saveSettings () {
@@ -400,10 +347,11 @@ export default {
 </script>
 
 <style lang="stylus">
-.chat-field.v-textarea.v-text-field--solo .v-input__prepend-inner
-  margin-top 0
-  padding-top 0
-  .v-file-input
+  .chat-field.v-textarea.v-text-field--solo .v-input__prepend-inner
     margin-top 0
     padding-top 0
+    .v-file-input
+      margin-top 0
+      padding-top 0
 </style>
+

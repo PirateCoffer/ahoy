@@ -75,6 +75,8 @@ export default {
       let redirect
       if (this.$route.query.redirect)
         redirect = JSON.parse(decodeURIComponent(this.$route.query.redirect))
+      // if (!redirect)
+        // redirect = { path: '/chat' }
       this.onLogin(this.username, this.password, redirect)
     }
   },

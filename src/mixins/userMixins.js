@@ -13,8 +13,8 @@ export default {
     onLogout () {
       this.$store.dispatch('user/logout')
       this.$store.commit('SET_RIGHT_NAV', false)
+      // this.$router.push('/')
       // this.$router.go() // reload
-      this.$router.push('/')
       this.notify('Logged Out')
     },
     onShade () {
