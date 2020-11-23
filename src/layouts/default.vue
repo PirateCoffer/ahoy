@@ -7,14 +7,18 @@
       flat
       height="68"
       >
+      <logo-btn class="pl-0 ml-0 mr-4"/>
+
       <v-app-bar-nav-icon @click.stop="leftNav = !leftNav" class="hidden-md-and-up" v-if="$auth"/>
+
+      <v-divider vertical class="mr-6"></v-divider>
+
       <v-toolbar-title class="pl-0 d-flex align-center" v-if="$auth">
         {{user.name}}&nbsp;<v-icon small color="yellow darken-3">mdi-star</v-icon>
       </v-toolbar-title>
-      <v-toolbar-items class="ml-3" v-else>
-        <v-btn text to="/">Ahoy!</v-btn>
-      </v-toolbar-items>
+
       <v-spacer></v-spacer>
+
       <v-responsive max-width="178" v-if="$auth">
         <v-text-field
           dense
@@ -184,10 +188,12 @@
 
 <script>
 import userMixin from '~/mixins/userMixins'
+import LogoBtn from '~/components/theme/LogoBtn'
 
 export default {
   name: 'ChatLayout',
   components: {
+    LogoBtn,
   },
   mixins: [userMixin],
   data: () => ({
@@ -347,6 +353,18 @@ export default {
 </script>
 
 <style lang="stylus">
+  .clickable
+    cursor pointer
+  .text-no-break
+    word-break normal
+  .no-bg:before
+    background none !important
+  .home-btn
+    text-transform none !important
+    &:before
+    &:hover:before
+      background none !important
+
   .chat-field.v-textarea.v-text-field--solo .v-input__prepend-inner
     margin-top 0
     padding-top 0
