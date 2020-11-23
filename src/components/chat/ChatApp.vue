@@ -78,134 +78,80 @@
 </template>
 
 <script>
-import userMixin from '~/mixins/userMixins'
-
 export default {
-  name: 'ChatLayout',
-  components: {
-  },
-  mixins: [userMixin],
+  name: 'ChatApp',
+  components: {},
   data: () => ({
-    form: {
-      settings: {
-        username: 'davy',
-        name: 'Davy Jones',
-        avatar: 'DJ',
-        color: 'green',
-      },
-    },
-    account: {
-      username: 'davy',
-      name: 'Davy Jones',
-      avatar: 'DJ',
-      color: 'green',
-    },
-    channels: {
-      alice: {
-        recent: {},
-        unread: 0,
-        members: {
-          davy: {},
-          alice: {},
-        },
-        messages: [],
-      },
-      bob: {
-        recent: {},
-        unread: 0,
-        members: {
-          davy: {},
-          bob: {},
-        },
-        messages: [],
-      },
-    },
-    channel: 'alice',
-    dialog: {
-      addContact: false,
-      settings: false,
-    },
     files: [],
     message: '',
-    number: 30,
-    leftNav: null,
-    // rightNav: false,
-    users: {
-      alice: { username: 'alice', name: 'Alice', avatar: 'A', color: 'pink' },
-      bob: { username: 'bob', name: 'Bob', avatar: 'B', color: 'teal' },
-    },
   }),
   computed: {
     user () {
       return this.users[this.channel]
     },
-    channelsComputed: {
+    users () {
+      return this.$store.state.chat.users
+    },
+    account () {
+      return this.$store.state.chat.account
+    },
+    channels: {
       get () {
         return this.$store.getters['chat/channels']
-        // return this.channels[this.channel].messages
       },
-      set (val) {
-        this.$store.dispatch('chat/setChannels')
-        // this.channels[this.channel].messages.push(val)
+      set (channels) {
+        this.$store.dispatch('chat/setChannels', { channels })
+      },
+    },
+    channel: {
+      get () {
+        return this.$store.state.chat.channel
+      },
+      set (channel) {
+        return this.$store.dispatch('chat/setChannel', { channel })
       },
     },
     messages: {
       get () {
         return this.channels[this.channel].messages
       },
-      set (val) {
-        this.channels[this.channel].messages.push(val)
+      set (message) {
+        this.$store.dispatch('chat/addMessage', { channel: this.channel, message })
       },
     },
     recent: {
       get () {
         return this.channels[this.channel].recent
       },
-      set (val) {
-        this.channels[this.channel].recent = val
+      set (recent) {
+        this.$store.dispatch('chat/setRecent', { channel: this.channel, recent })
       },
     },
-    rightNav: {
-      get () {
-        return this.$store.state.rightNav
-      },
-      set (value) {
-        this.$store.commit('SET_RIGHT_NAV', value)
-      }
+  },
+  watch: {
+    channel (curr, prev) {
+      this.updateScroll()
     },
   },
   created () {
+    const number = 30
     this.channel = 'alice'
-    for (let ii = 0; ii < this.number; ii++)
+    for (let ii = 0; ii < number; ii++)
       this.addMessage(`Message ${ii + 1}`)
     this.channel = 'bob'
-    for (let ii = 0; ii < this.number; ii++)
+    for (let ii = 0; ii < number; ii++)
       this.addMessage(`Message ${ii + 1}`)
     this.channel = 'alice'
-
-    this.$vuetify.theme.dark = true
   },
   mounted () {
-    this.updateScroll()
     this.updator = this.updateScroll.bind(this)
     this.addEvent(window, 'resize', this.updator)
+    this.updateScroll()
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.updator)
   },
   methods: {
-    saveSettings () {
-      this.dialog.settings = false
-    },
-    addContact () {
-      this.dialog.addContact = false
-    },
-    selectChan (username) {
-      this.channel = username
-      setTimeout(() => {
-        this.updateScroll()
-      }, 0)
-    },
     addEvent (object, type, callback) {
       if (object == null || typeof object === 'undefined')
         return
@@ -238,7 +184,7 @@ export default {
         msg.multi = true
       else
         if (un === 'other')
-          this.channels[user.username].unread++
+          this.$store.dispatch('chat/incrementUnread', { channel: this.channel })
       this.recent = msg
       this.messages = msg
     },

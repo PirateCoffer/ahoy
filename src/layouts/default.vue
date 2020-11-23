@@ -71,7 +71,12 @@
       </template>
       <v-divider></v-divider>
       <v-list shaped dense>
-        <v-list-item @click="selectChan(key)" v-for="(fren, key) in channels" :key="fren.id" :input-value="channel === key">
+        <v-list-item
+          v-for="(fren, key) in channels"
+          :key="fren.id"
+          :input-value="channel === key"
+          @click="channel = key"
+          >
           <v-list-item-avatar size="42">
             <v-avatar :color="users[key].color" size="42">{{users[key].avatar}}</v-avatar>
           </v-list-item-avatar>
@@ -145,7 +150,10 @@
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Username" hide-details></v-text-field>
+              <v-text-field label="Name" hide-details v-model="form.addContact.name" />
+              <v-text-field label="Username" hide-details v-model="form.addContact.username" />
+              <v-text-field label="Avatar" hide-details v-model="form.addContact.avatar" />
+              <v-text-field label="Color" hide-details v-model="form.addContact.color" />
             </v-col>
             <v-col cols="12">
               <v-btn block color="primary" @click="addContact">Submit</v-btn>
@@ -171,10 +179,10 @@
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <v-text-field label="Name" hide-details v-model="account.name" />
-              <v-text-field label="Username" hide-details v-model="account.username" />
-              <v-text-field label="Avatar" hide-details v-model="account.avatar" />
-              <v-text-field label="Color" hide-details v-model="account.color" />
+              <v-text-field label="Name" hide-details v-model="form.settings.name" />
+              <v-text-field label="Username" hide-details v-model="form.settings.username" />
+              <v-text-field label="Avatar" hide-details v-model="form.settings.avatar" />
+              <v-text-field label="Color" hide-details v-model="form.settings.color" />
             </v-col>
             <v-col cols="12">
               <v-btn block color="primary" @click="saveSettings">Save</v-btn>
@@ -204,34 +212,13 @@ export default {
         avatar: 'DJ',
         color: 'green',
       },
-    },
-    account: {
-      username: 'davy',
-      name: 'Davy Jones',
-      avatar: 'DJ',
-      color: 'green',
-    },
-    channels: {
-      alice: {
-        recent: {},
-        unread: 0,
-        members: {
-          davy: {},
-          alice: {},
-        },
-        messages: [],
-      },
-      bob: {
-        recent: {},
-        unread: 0,
-        members: {
-          davy: {},
-          bob: {},
-        },
-        messages: [],
+      addContact: {
+        username: 'charlie',
+        name: 'Charlie',
+        avatar: 'C',
+        color: 'orange',
       },
     },
-    channel: 'alice',
     dialog: {
       addContact: false,
       settings: false,
@@ -240,31 +227,27 @@ export default {
     message: '',
     number: 30,
     leftNav: null,
-    // rightNav: false,
-    users: {
-      alice: { username: 'alice', name: 'Alice', avatar: 'A', color: 'pink' },
-      bob: { username: 'bob', name: 'Bob', avatar: 'B', color: 'teal' },
-    },
   }),
   computed: {
+    account () {
+      return this.$store.state.chat.account
+    },
     user () {
       return this.users[this.channel]
     },
-    messages: {
+    channels () {
+      return this.$store.state.chat.channels
+    },
+    channel: {
       get () {
-        return this.channels[this.channel].messages
+        return this.$store.state.chat.channel
       },
-      set (val) {
-        this.channels[this.channel].messages.push(val)
+      set (channel) {
+        this.$store.dispatch('chat/setChannel', { channel })
       },
     },
-    recent: {
-      get () {
-        return this.channels[this.channel].recent
-      },
-      set (val) {
-        this.channels[this.channel].recent = val
-      },
+    users () {
+      return this.$store.state.chat.users
     },
     rightNav: {
       get () {
@@ -276,77 +259,16 @@ export default {
     },
   },
   created () {
-    this.channel = 'alice'
-    for (let ii = 0; ii < this.number; ii++)
-      this.addMessage(`Message ${ii + 1}`)
-    this.channel = 'bob'
-    for (let ii = 0; ii < this.number; ii++)
-      this.addMessage(`Message ${ii + 1}`)
-    this.channel = 'alice'
-
-    this.$vuetify.theme.dark = true
-  },
-  mounted () {
-    // if (this.$auth) {
-    //   this.updateScroll()
-    //   this.addEvent(window, 'resize', this.updateScroll.bind(this))
-    // }
+    this.$vuetify.theme.dark = this.$store.getters['user/shade']
   },
   methods: {
     saveSettings () {
       this.dialog.settings = false
+      this.$store.dispatch('chat/setAccount', this.form.settings)
     },
     addContact () {
       this.dialog.addContact = false
-    },
-    selectChan (username) {
-      this.channel = username
-      setTimeout(() => {
-        this.updateScroll()
-      }, 0)
-    },
-    addEvent (object, type, callback) {
-      if (object == null || typeof object === 'undefined')
-        return
-      if (object.addEventListener) {
-        object.addEventListener(type, callback, false)
-      } else if (object.attachEvent) {
-        object.attachEvent(`on${type}`, callback)
-      } else {
-        object[`on${type}`] = callback
-      }
-    },
-    updateScroll () {
-      const scroller = this.$refs.scroller
-      scroller.scrollTop = scroller.scrollHeight
-    },
-    addMessage (message) {
-      message = message || this.message
-      message = message.replace(/\r?\n/g, '<br />')
-      const un = Math.random() > 0.5 ? 'me' : 'other'
-      const user = un === 'me' ? this.account : this.user
-      const msg = {
-        user: user.username,
-        name: user.name,
-        avatar: user.avatar,
-        color: user.color,
-        time: Date.now(),
-        message,
-      }
-      if (this.recent.user === msg.user)
-        msg.multi = true
-      else
-        if (un === 'other')
-          this.channels[user.username].unread++
-      this.recent = msg
-      this.messages = msg
-    },
-    onSend () {
-      this.addMessage()
-      this.message = ''
-      setTimeout(() => {
-        this.updateScroll()
-      }, 0)
+      this.$store.dispatch('chat/addUser', this.form.addContact)
     },
   },
 }

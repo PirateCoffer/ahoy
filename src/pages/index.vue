@@ -4,7 +4,7 @@
 
 <script>
 import AnonPage from '~/components/pages/AnonPage'
-import ChatApp from '~/components/pages/ChatApp'
+import ChatApp from '~/components/chat/ChatApp'
 export default {
   name: 'HomePage',
   computed: {
